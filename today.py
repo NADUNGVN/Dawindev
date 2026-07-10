@@ -478,4 +478,4 @@ if __name__ == '__main__':
     print('Total GitHub GraphQL API calls:', '{:>3}'.format(sum(QUERY_COUNT.values())))
     for funct_name, count in QUERY_COUNT.items(): print('{:<28}'.format('   ' + funct_name + ':'), '{:>6}'.format(count))
 
-# Trigger new workflow run to pick up updated secrets
+# Trigger new workflow run to verify repository secrets setup
