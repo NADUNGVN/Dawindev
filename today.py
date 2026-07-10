@@ -251,6 +251,13 @@ def cache_builder(edges, comment_size, force_cache, loc_add=0, loc_del=0):
                     data[index] = repo_hash + ' ' + str(edges[index]['node']['defaultBranchRef']['target']['history']['totalCount']) + ' ' + str(loc[2]) + ' ' + str(loc[0]) + ' ' + str(loc[1]) + '\n'
             except TypeError: # If the repo is empty
                 data[index] = repo_hash + ' 0 0 0 0\n'
+            except Exception as e:
+                print(f"Warning: Bo qua tinh toan LOC cho {edges[index]['node']['nameWithOwner']} do gap loi API: {e}")
+                try:
+                    commit_val = edges[index]['node']['defaultBranchRef']['target']['history']['totalCount']
+                except Exception:
+                    commit_val = 0
+                data[index] = repo_hash + ' ' + str(commit_val) + ' 0 0 0\n'
     with open(filename, 'w') as f:
         f.writelines(cache_comment)
         f.writelines(data)
