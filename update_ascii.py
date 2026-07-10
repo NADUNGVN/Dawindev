@@ -11,26 +11,33 @@ except ImportError:
     from PIL import Image
 
 def convert_to_ascii(image_path, mode="dark", width=44, height=25):
-    # Dải ký tự xếp theo mật độ từ tối đến sáng
-    chars_dark = " .'`,;:!il*{%H@M"
-    chars_light = "M@H%*{li!:;,'. "
+    # Dải ký tự không chứa khoảng trắng ở đầu/cuối để tránh làm mất chi tiết tối màu (mắt, miệng)
+    # Khoảng trắng chỉ dùng riêng cho màu nền (trong suốt)
+    chars_dark = ".,':;!il*v%xH@M"
+    chars_light = "M@Hx%v*li!;:',."
     chars = chars_dark if mode == "dark" else chars_light
     
     img = Image.open(image_path)
-    img = img.resize((width, height))
+    
+    # Tăng độ tương phản (contrast) để các chi tiết khuôn mặt (mắt, mũi, miệng) rõ nét hơn
+    from PIL import ImageEnhance
+    enhancer = ImageEnhance.Contrast(img)
+    img = enhancer.enhance(1.8) # Tăng 80% độ tương phản
+    
+    # Sử dụng NEAREST để giữ nguyên nét sắc của ảnh pixel art, tránh bị mờ nhòe khi resize
+    img = img.resize((width, height), Image.NEAREST)
     
     # Lấy màu nền ở góc trên bên trái (0, 0)
     img_rgb = img.convert('RGB')
     bg_color = img_rgb.getpixel((0, 0))
     
-    img_gray = img.convert('L') # Chuyển sang ảnh xám (grayscale)
+    img_gray = img.convert('L') # Chuyển sang ảnh xám
     
     ascii_rows = []
     for y in range(height):
         row = ""
         for x in range(width):
             r, g, b = img_rgb.getpixel((x, y))
-            # Tính khoảng cách Euclidean giữa màu pixel và màu nền
             dist = ((r - bg_color[0])**2 + (g - bg_color[1])**2 + (b - bg_color[2])**2)**0.5
             
             if dist < 30:
