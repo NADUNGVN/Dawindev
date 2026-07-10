@@ -117,7 +117,7 @@ def recursive_loc(owner, repo_name, data, cache_comment, addition_total=0, delet
             defaultBranchRef {
                 target {
                     ... on Commit {
-                        history(first: 30, after: $cursor) {
+                        history(first: 50, after: $cursor) {
                             totalCount
                             edges {
                                 node {
@@ -182,7 +182,7 @@ def loc_query(owner_affiliation, comment_size=0, force_cache=False, cursor=None,
     query = '''
     query ($owner_affiliation: [RepositoryAffiliation], $login: String!, $cursor: String) {
         user(login: $login) {
-            repositories(first: 60, after: $cursor, ownerAffiliations: $owner_affiliation) {
+            repositories(first: 60, after: $cursor, ownerAffiliations: $owner_affiliation, isFork: false) {
             edges {
                 node {
                     ... on Repository {
